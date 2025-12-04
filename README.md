@@ -1,115 +1,154 @@
-# 🛰️ Drone Autônomo PyBullet – N2 (Versão Estável V5)
+# 🛰️ Drone Autônomo PyBullet – N2 (Versão Suprema V6)
 
-> *"Porque às vezes a vida não colabora… mas o drone colabora sim."*
+> **"Antes de tudo, V6 só existe um bom: o 2JZ do Supra MK4.  
+Este daqui tenta acompanhar."**
 
 ---
 
 ## 📝 Sobre o Projeto
 
-Este projeto implementa um drone autônomo em **PyBullet** capaz de:
+A **Versão V6** traz tudo que a V5 tinha de maravilhoso, estável e robusto…  
+**com uma diferença fundamental: agora ela conversa com o Node-RED como gente.**
 
-- 🎯 **Mapear** uma área circular de operação.
-- 👁️ **Detectar pontos** conforme se aproxima.
-- 🛣️ **Planejar rotas** com algoritmos *Nearest Neighbor* + *Two-Opt*.
-- ⚖️ **Controlar** altitude, roll, pitch e yaw com um PID maroto.
-- 📍 **Visitar até 100 pontos**, conforme solicitado na especificação.
-- 🏠 **Voltar para a base** automaticamente (como um bom funcionário público aéreo).
+Nesta versão:
 
-**Resultado:** Tudo isso feito com sucesso, estável, bonito, suave, funcionando e sem travar o PC.
+- 🛰️ O drone continua voando lindamente no PyBullet.  
+- 🧠 A IA do planejamento continua mais esperta que metade da população.  
+- 📦 As entregas continuam sendo feitas.  
+- 📍 O retorno à base continua impecável.  
+- 🧮 Os logs continuam organizados e inteligíveis.  
+- 📊 **E agora, no final da execução, o drone envia um JSON de métricas pro Node-RED**, bonitinho, limpo e sem explodir a dashboard.
 
----
-
-## 🧪 Versão Entregue: V5
-
-Essa é a versão que funciona **100% sem sofrimento**. Ela contém:
-
-1. **PyBullet configurado.**
-2. **Drone físico** com controle PD estabilizado.
-3. **Lógica completa:** Detecção → Rota → Entrega → Replanejamento → Retorno.
-4. **Logs estruturados.**
-5. **Suporte robusto:** 10, 50, 100 ou quantos pontos forem necessários.
-6. **Física:** Bonita, suave e confiável.
-
-> **Resumo:** É a versão estável. A gasolina azul da aviação.
+> **Resumo técnico:**  
+> Esta é a versão que realmente integra PyBullet com Node-RED sem destruir o planeta.
 
 ---
 
-## 🧨 E o Node-RED?
+## 🧪 Sobre os Arquivos
 
-Bom… sobre o Node-RED…  
-Vamos dizer que:
+### 📁 `drone_v6.py`  
+O *código oficial desta entrega*.  
+É o script que você roda, observa o drone voar, e no final recebe os dados no Node-RED.
 
-- Eu tentei.
-- Eu realmente tentei.
-- Eu tentei tanto que derrubei o Node-RED mais vezes do que o drone caiu.
+### 📁 `drone_v5.py`  
+Mantido **por segurança**, caso você queira voltar para a versão estável original antes de mexer no Node-RED.  
+O famoso: *“Se tudo der errado, volte para mim.”*
 
-**O Relatório de Guerra do Node-RED:**
-* Tentei fluxo a cada frame → **Travou.**
-* Tentei fluxo por segundo → **Quebrou a dashboard.**
-* Tentei criar dashboards → **Erro de "tipos não reconhecidos".**
-* Importar JSON → **Virou uma salada de nós empilhados.**
+### 📁 `metrics.json`  
+Arquivo **gerado automaticamente** sempre que a simulação termina.  
+Ele contém:
 
-O Node-RED, no final, parecia mais nervoso que o drone sem PID. Como estou lidando com múltiplos projetos simultâneos (IoT, sistemas distribuídos, ML, embarcados…), claramente o *Deus das Entregas* decidiu aumentar a dificuldade neste aqui.
+- número de entregas;  
+- quantidade de replanejamentos;  
+- energia estimada;  
+- distância real percorrida;  
+- média e desvio de altitude;  
+- tempo por ponto.
 
-**Status Atual da Integração:**
-- ❌ A integração Node-RED **NÃO** está finalizada.
-- ✔️ O sistema em PyBullet está **impecavelmente funcional**.
-- ✔️ Será completado futuramente (porque odeio coisas inacabadas).
+Serve tanto para depuração quanto para alimentar o Node-RED.
+
+### 📁 `flow.json`  
+Esse é o **fluxo do Node-RED pronto para importar**.  
+Ele inclui:
+
+- um endpoint HTTP `/metrics`  
+- um debug para testar mensagens  
+- um fluxo que recebe o JSON e exibe os dados
+
+Basta importar e tudo fica funcionando.
 
 ---
 
-## 📊 % de Conclusão do Projeto
+## 🧠 Como Rodar Tudo (Sem Sofrer)
+
+### 🔧 1. Instale as dependências via pip
+
+```pip install pybullet numpy requests```
+
+*(Sim, agora usa requests para enviar a métrica.)*
+
+### 🧨 2. Abra o Node-RED  
+Basta rodar:
+
+```node-red```
+
+Acesse:
+
+**http://localhost:1880**
+
+### 🧩 3. Importe o `flow.json`  
+No Node-RED:
+
+Menu → Import → Cole o conteúdo do arquivo → Deploy.
+
+### 🚀 4. Rode o drone  
+Basta executar:
+
+```python drone_v6.py```
+
+- A simulação abre  
+- O drone sobe  
+- Detecta pontos  
+- Planeja rota  
+- Faz entregas  
+- Volta pra base  
+- **E no final envia os dados pro Node-RED**  
+- Você verá o JSON chegando no debug do fluxo.
+
+### 🖥️ 5. Verifique se enviou corretamente  
+Use este comando para testar o endpoint:
+
+```curl -X POST http://localhost:1880/metrics -H "Content-Type: application/json" -d "{\"teste\":123}"```
+
+Se aparecer no Node-RED, está pronto.
+
+---
+
+## 📷 Imagens
+
+### 🚗 GIF motivacional (Supra MK4 2JZ — O verdadeiro V6 da vida)
+![Suprinha](supra.gif)
+
+### 🛰️ Drone rodando no PyBullet  
+![Drone](drone.png)
+
+---
+
+## 📊 % de Conclusão do Projeto (Versão V6)
 
 | Módulo | Status | % |
 | :--- | :--- | :--- |
-| **Física e Simulação PyBullet** | ✅ Concluído | 100% |
-| **Planejamento de Trajetória** | ✅ Concluído | 100% |
-| **Detecção e Replanejamento** | ✅ Concluído | 100% |
-| **Controle do Drone (PID/PD)** | ✅ Concluído | 100% |
+| **Física PyBullet** | ✅ Concluído | 100% |
+| **Planejamento** | ✅ Concluído | 100% |
+| **Entrega + Replanejamento** | ✅ Concluído | 100% |
+| **Controle (PID/PD)** | ✅ Concluído | 100% |
 | **Logs estruturados** | ✅ Concluído | 100% |
-| **Suporte a 100 pontos** | ✅ Concluído | 100% |
-| **Integração com Node-RED** | ❌ Não concluído (Morreu no processo) | 30% |
-| **Dashboard e Supervisão** | ❌ Ainda não integrado | 0% |
+| **Integração Node-RED (V6)** | ✅ Concluído | 100% |
+| **Dashboard avançada** | ❌ Não incluída (não era requisito) | 0% |
 
-### ⭐ Progresso Total Estimado: ~82%
-*(Sim, professor, está incompleto. Mas a parte que existe está funcionando melhor do que meu sono.)*
-
----
-
-## 🚀 Como Rodar (Sem Sofrimento)
-
-Para ver a mágica acontecer, certifique-se de ter as dependências `pybullet` e `numpy` instaladas e simplesmente execute o arquivo `drone_v5.py`.
-
-**Pronto.** A simulação abre, o drone sobe, detecta, planeja, visita, entrega e volta pra casa. Coisa linda de ver.
+### ⭐ Progresso Total: **~94%**
 
 ---
 
 ## ⚠️ Conclusão
 
-**Senhor Professor,**
+Professor,
 
-Apresento aqui a versão operacional estável (**V5**), completamente funcional para a parte de robótica e simulação física. O Node-RED, entretanto, enfrentou problemas técnicos severos (compatibilidade, depreciação de bibliotecas e sobrecarga de fluxo) e, somado aos prazos de outros projetos acadêmicos, não pôde ser finalizado a tempo desta entrega.
+O V6 entrega tudo o que o senhor pediu:
 
-Mas o compromisso permanece: **A integração será finalizada.**
+- Drone autônomo completo  
+- Planejamento otimizado  
+- Física robusta  
+- Logs perfeitos  
+- **Integração Node-RED funcional e leve**  
+- Métricas enviadas sem travar o mundo
+
+E por precaução, a versão V5 continua no pacote — caso o senhor queira "voltar no tempo".
 
 ---
 
-## 🙇 Pedido de Misericórdia
+## 👑 Equipe
 
-Professor, humildemente…
-
-Se for possível conceder **mais alguns dias** para eu integrar o Node-RED sem cometer um crime digital contra a ferramenta, eu agradeço profundamente.
-
-**Promessa de entrega futura:**
-* Dashboard completa.
-* Fluxo limpo.
-* Gráficos reais e monitoramento em tempo real.
-* Logs funcionando.
-* Tudo sem travar a máquina e sem explodir o Node-RED.
-
-*(E sem enviar 50 requisições por segundo. Desculpa novamente 😔).*
-
-**Equipe:**
-- Julia Silva
-- Labelle Candido
-- Rafael "Não tão mais lenda" Diniz
+- Julia Silva  
+- Labelle Candido  
+- Rafael "lenda suprema" Diniz
