@@ -63,14 +63,18 @@ Basta importar e tudo fica funcionando.
 
 ### 🔧 1. Instale as dependências via pip
 
-```pip install pybullet numpy requests```
+```bash
+pip install pybullet numpy requests
+```
 
 *(Sim, agora usa requests para enviar a métrica.)*
 
 ### 🧨 2. Abra o Node-RED  
 Basta rodar:
 
-```node-red```
+```bash
+node-red
+```
 
 Acesse:
 
@@ -84,7 +88,9 @@ Menu → Import → Cole o conteúdo do arquivo → Deploy.
 ### 🚀 4. Rode o drone  
 Basta executar:
 
-```python drone_v6.py```
+```bash
+python drone_v6.py
+```
 
 - A simulação abre  
 - O drone sobe  
@@ -98,7 +104,9 @@ Basta executar:
 ### 🖥️ 5. Verifique se enviou corretamente  
 Use este comando para testar o endpoint:
 
-```curl -X POST http://localhost:1880/metrics -H "Content-Type: application/json" -d "{\"teste\":123}"```
+```bash
+curl -X POST http://localhost:1880/metrics -H "Content-Type: application/json" -d "{\"teste\":123}"
+```
 
 Se aparecer no Node-RED, está pronto.
 
