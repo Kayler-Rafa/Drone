@@ -1,0 +1,140 @@
+[
+    {
+        "id": "tab_metrics_v2",
+        "type": "tab",
+        "label": "Receber Métricas V2",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "http_in_metrics",
+        "type": "http in",
+        "z": "tab_metrics_v2",
+        "name": "POST /metrics",
+        "url": "/metrics",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 160,
+        "y": 120,
+        "wires": [
+            [
+                "debug_incoming",
+                "fn_parse_and_save"
+            ]
+        ]
+    },
+    {
+        "id": "debug_incoming",
+        "type": "debug",
+        "z": "tab_metrics_v2",
+        "name": "Debug - incoming msg",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 420,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "fn_parse_and_save",
+        "type": "function",
+        "z": "tab_metrics_v2",
+        "name": "Parse / Validar / Preparar arquivo",
+        "func": "// 1) Aceita payload objeto ou string JSON\n// 2) Gera finalObject com metadata\n// 3) Define msg.filename e msg.payload (stringiﬁcado) para o node file\n\ntry {\n    // se payload for string, tenta parsear\n    if (typeof msg.payload === 'string') {\n        try {\n            msg.payload = JSON.parse(msg.payload);\n        } catch (err) {\n            msg.statusCode = 400;\n            msg.payload = { error: 'Invalid JSON (parse failed)', detail: String(err) };\n            return [null, msg];\n        }\n    }\n\n    if (!msg.payload || typeof msg.payload !== 'object') {\n        msg.statusCode = 400;\n        msg.payload = { error: 'Invalid JSON (payload must be object)' };\n        return [null, msg];\n    }\n\n    // timestamp e filename - AJUSTE userPath se necessário\n    const now = new Date();\n    const timestamp = now.toISOString().replace(/[:.]/g, '-');\n    const userPath = \"C:/Users/Rafael Diniz/metrics\"; // <- ajuste aqui se quiser outro diretório\n    const filename = `${userPath}/metrics_${timestamp}.json`;\n\n    const finalObject = {\n        received_at: now.toISOString(),\n        source_ip: msg.req ? (msg.req.headers['x-forwarded-for'] || msg.req.socket.remoteAddress) : 'unknown',\n        data: msg.payload\n    };\n\n    msg.filename = filename;\n    msg.payload = JSON.stringify(finalObject, null, 2);\n\n    return [msg, null];\n} catch (e) {\n    msg.statusCode = 500;\n    msg.payload = { error: 'internal_error', detail: String(e) };\n    return [null, msg];\n}\n",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 120,
+        "wires": [
+            [
+                "file_save"
+            ],
+            [
+                "http_response_error"
+            ]
+        ]
+    },
+    {
+        "id": "file_save",
+        "type": "file",
+        "z": "tab_metrics_v2",
+        "name": "Salvar arquivo (cria dir)",
+        "filename": "",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 660,
+        "y": 120,
+        "wires": [
+            [
+                "fn_response_ok",
+                "debug_file_saved"
+            ]
+        ]
+    },
+    {
+        "id": "debug_file_saved",
+        "type": "debug",
+        "z": "tab_metrics_v2",
+        "name": "Debug - file saved msg",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 880,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "fn_response_ok",
+        "type": "function",
+        "z": "tab_metrics_v2",
+        "name": "Responder OK",
+        "func": "// Simples resposta para o cliente HTTP\nmsg.payload = { ok: true };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 880,
+        "y": 120,
+        "wires": [
+            [
+                "http_response_ok"
+            ]
+        ]
+    },
+    {
+        "id": "http_response_ok",
+        "type": "http response",
+        "z": "tab_metrics_v2",
+        "name": "HTTP 200 OK",
+        "statusCode": "",
+        "headers": {},
+        "x": 1100,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "http_response_error",
+        "type": "http response",
+        "z": "tab_metrics_v2",
+        "name": "HTTP ERROR",
+        "statusCode": "",
+        "headers": {},
+        "x": 700,
+        "y": 220,
+        "wires": []
+    }
+]
